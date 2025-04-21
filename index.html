@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Data - Farmer Collective</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .data-card {
+            transition: all 0.3s ease;
+        }
+        .data-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        #pdfContainer {
+            background-color: white;
+            padding: 2rem;
+        }
+        .skeleton {
+            background-color: #e2e8f0;
+            background-image: linear-gradient(90deg, #e2e8f0 0px, #f1f5f9 40px, #e2e8f0 80px);
+            background-size: 300%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 0.25rem;
+        }
+        @keyframes shimmer {
+            0% { background-position: -100%; }
+            100% { background-position: 100%; }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .highlight {
+            background-color: #f0fff4;
+            border-left: 4px solid #48bb78;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <span class="text-green-600 font-bold text-xl">Bharuch Kisan Agrofed Producer Ltd.
+                    </span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-center space-x-4">
+                        <!-- <a href="#" class="text-gray-700 hover:text-green-600 px-3 py-2">Home</a> -->
+                        <!-- <a href="#" class="text-gray-700 hover:text-green-600 px-3 py-2">About</a> -->
+                        <a href="#" class="bg-green-600 text-white px-3 py-2 rounded-md">Company Data</a>
+                        <!-- <a href="#" class="text-gray-700 hover:text-green-600 px-3 py-2">Contact</a> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Header with Search and Download -->
+        <div class="text-center mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Company Data Overview</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-6">
+                Complete details of our farmer-led initiative including registration, financials, and partnerships.
+            </p>
+            
+            <div class="flex flex-col md:flex-row justify-center items-center gap-4 mb-8">
+                <div class="relative w-full md:w-96">
+                    <input type="text" id="searchInput" placeholder="Search company data..." 
+                           class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-2.5 text-gray-400" 
+                         viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <button id="downloadBtn" class="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-md flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    Download as PDF
+                </button>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-2 mb-6">
+                <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-green-100 text-green-800 hover:bg-green-200" data-filter="all">All Data</button>
+                <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200" data-filter="basic">Basic Info</button>
+                <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-purple-100 text-purple-800 hover:bg-purple-200" data-filter="financial">Financials</button>
+                <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 hover:bg-yellow-200" data-filter="tax">Tax & Compliance</button>
+                <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-red-100 text-red-800 hover:bg-red-200" data-filter="partners">Partners</button>
+            </div>
+        </div>
+
+        <!-- Loading Skeleton -->
+        <div id="skeletonLoader" class="space-y-6">
+            <div class="skeleton h-16 w-full rounded-lg"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="skeleton h-40 rounded-lg"></div>
+                <div class="skeleton h-40 rounded-lg"></div>
+            </div>
+            <div class="skeleton h-32 w-full rounded-lg"></div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="skeleton h-48 rounded-lg"></div>
+                <div class="skeleton h-48 rounded-lg"></div>
+                <div class="skeleton h-48 rounded-lg"></div>
+            </div>
+        </div>
+
+        <!-- Visible Data Display (initially hidden) -->
+        <div id="visibleData" class="hidden">
+            <!-- Basic Info Card -->
+            <div class="data-card bg-white p-6 rounded-lg shadow-sm mb-6 fade-in" data-category="basic">
+                <h2 class="text-xl font-semibold text-green-600 mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2H4a1 1 0 010-2V4zm3 1h2v2H7V5zm0 4h2v2H7V9zm0 4h2v2H7v-2zm4-8h2v2h-2V5zm0 4h2v2h-2V9zm0 4h2v2h-2v-2z" clip-rule="evenodd" />
+                    </svg>
+                    Basic Information
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="searchable"><span class="font-medium">Company Name:</span> Farmer Collective</p>
+                        <p class="searchable"><span class="font-medium">Established:</span> 22nd October 2021</p>
+                        <p class="searchable"><span class="font-medium">Address:</span> 16, Malhar Complex, Opp. New Collector Office, Kanbivaga, Bharuch</p>
+                    </div>
+                    <div>
+                        <p class="searchable"><span class="font-medium">CIN:</span> U01100GJ2021PTC126574</p>
+                        <p class="searchable"><span class="font-medium">Registration No:</span> 126574</p>
+                        <p class="searchable"><span class="font-medium">Udyam Registration:</span> UDHYAM-GJ-06-0019156</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financials Card -->
+            <div class="data-card bg-white p-6 rounded-lg shadow-sm mb-6 fade-in" data-category="financial">
+                <h2 class="text-xl font-semibold text-green-600 mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd" />
+                    </svg>
+                    Financial Information
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="font-medium text-lg">Shareholders</p>
+                        <p class="text-2xl font-bold text-green-600 searchable">650</p>
+                        <p class="text-sm text-gray-600 searchable">(180 women, 400 Small/Marginal Farmers)</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="font-medium text-lg">Paid-up Capital</p>
+                        <p class="text-2xl font-bold text-green-600 searchable">₹724,200</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="font-medium text-lg">Authorized Capital</p>
+                        <p class="text-2xl font-bold text-green-600 searchable">₹1,500,000</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tax & Compliance Card -->
+            <div class="data-card bg-white p-6 rounded-lg shadow-sm mb-6 fade-in" data-category="tax">
+                <h2 class="text-xl font-semibold text-green-600 mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                    </svg>
+                    Tax & Compliance
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="searchable"><span class="font-medium">PAN:</span> AAKCB2439D</p>
+                        <p class="searchable"><span class="font-medium">TAN:</span> BRBD04140D</p>
+                    </div>
+                    <div>
+                        <p class="searchable"><span class="font-medium">GST No:</span> 24AAKCB2439D1Z0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Licenses Card -->
+            <div class="data-card bg-white p-6 rounded-lg shadow-sm mb-6 fade-in" data-category="basic">
+                <h2 class="text-xl font-semibold text-green-600 mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M6.625 2.655A9 9 0 0119 11a1 1 0 11-2 0 7 7 0 00-9.625-6.492 1 1 0 11-.75-1.853zM4.662 4.959A1 1 0 014.75 6.37 6.97 6.97 0 003 11a1 1 0 11-2 0 8.97 8.97 0 012.25-5.953 1 1 0 011.412-.088z" clip-rule="evenodd" />
+                        <path fill-rule="evenodd" d="M5 11a5 5 0 1110 0 1 1 0 11-2 0 3 3 0 10-6 0c0 1.677-.345 3.276-.968 4.729a1 1 0 11-1.838-.789A9.964 9.964 0 005 11zm8.921 2.012a1 1 0 01.831 1.145 19.86 19.86 0 01-.545 2.436 1 1 0 11-1.92-.558c.207-.713.371-1.445.49-2.192a1 1 0 011.144-.83z" clip-rule="evenodd" />
+                        <path fill-rule="evenodd" d="M10 10a1 1 0 011 1c0 2.236-.46 4.368-1.29 6.304a1 1 0 01-1.838-.789A13.952 13.952 0 009 11a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    Licenses
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="searchable"><span class="font-medium">FSSAI License No:</span> 20723007000001</p>
+                    </div>
+                    <div>
+                        <p class="searchable"><span class="font-medium">Seed License No:</span> BHA/FSR220003525/2023-24</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Partners Card -->
+            <div class="data-card bg-white p-6 rounded-lg shadow-sm mb-6 fade-in" data-category="partners">
+                <h2 class="text-xl font-semibold text-green-600 mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z" />
+                    </svg>
+                    Key Partners
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <ul class="list-disc pl-5">
+                        <li class="searchable">Nirmay Woodlam (Morbi)</li>
+                        <li class="searchable">Pacific Wood Industry (Morbi)</li>
+                        <li class="searchable">Shreeji Corporation (Vadodara)</li>
+                        <li class="searchable">Kutch Khedoi FPO (Khedoi)</li>
+                    </ul>
+                    <ul class="list-disc pl-5">
+                        <li class="searchable">Mafatlal Industries (Anand)</li>
+                        <li class="searchable">Mama Agro Industries (Vadodara)</li>
+                        <li class="searchable">Moilimor Pvt. Ltd. (Surat)</li>
+                        <li class="searchable">Honey Veda (Ahmedabad)</li>
+                    </ul>
+                </div>
+                <p class="mt-4 text-sm text-gray-600 searchable">Supported by Gujarat Natural Farming University and guided by CBBO - Neer Horticulture Solution Private Limited</p>
+            </div>
+
+            <!-- Services Card -->
+            <div class="data-card bg-white p-6 rounded-lg shadow-sm fade-in" data-category="basic">
+                <h2 class="text-xl font-semibold text-green-600 mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                    </svg>
+                    Services
+                </h2>
+                <ul class="list-disc pl-5">
+                    <li class="searchable">Eucalyptus plantation</li>
+                    <li class="searchable">Wood harvesting</li>
+                    <li class="searchable">Bio-briquette supply</li>
+                    <li class="searchable">Agrowaste collection</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- PDF Container (hidden until download) -->
+        <div id="pdfContainer" class="hidden">
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-bold text-gray-800">Farmer Collective - Company Data</h1>
+                <p class="text-gray-600">As of ${new Date().toLocaleDateString()}</p>
+            </div>
+            
+            <!-- Content will be generated here by JavaScript -->
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simulate content loading
+            setTimeout(() => {
+                document.getElementById('skeletonLoader').classList.add('hidden');
+                document.getElementById('visibleData').classList.remove('hidden');
+            }, 1500);
+
+            // PDF Download Functionality
+            document.getElementById('downloadBtn').addEventListener('click', function() {
+                // Create PDF content dynamically based on visible cards
+                const visibleCards = document.querySelectorAll('#visibleData .data-card:not(.hidden)');
+                let pdfContent = `
+                    <div class="text-center mb-8">
+                        <h1 class="text-2xl font-bold text-gray-800">Farmer Collective - Company Data</h1>
+                        <p class="text-gray-600">As of ${new Date().toLocaleDateString()}</p>
+                    </div>
+                `;
+                
+                visibleCards.forEach(card => {
+                    pdfContent += `
+                        <div class="mb-8">
+                            <h2 class="text-xl font-semibold text-green-600 border-b pb-2 mb-4">${card.querySelector('h2').textContent}</h2>
+                            <div class="grid grid-cols-1 gap-4">
+                                ${card.innerHTML.replace(/<h2.*?<\/h2>/, '')}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                const pdfContainer = document.getElementById('pdfContainer');
+                pdfContainer.innerHTML = pdfContent;
+                pdfContainer.classList.remove('hidden');
+                
+                // PDF options
+                const options = {
+                    margin: 10,
+                    filename: 'Farmer_Collective_Company_Data.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, logging: true },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+                
+                // Generate PDF
+                html2pdf().set(options).from(pdfContainer).save().then(() => {
+                    pdfContainer.classList.add('hidden');
+                });
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const searchableElements = document.querySelectorAll('.searchable');
+                
+                if (searchTerm.length === 0) {
+                    searchableElements.forEach(el => {
+                        el.classList.remove('highlight');
+                        el.parentElement.parentElement.classList.remove('highlight');
+                    });
+                    return;
+                }
+                
+                searchableElements.forEach(el => {
+                    const text = el.textContent.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        el.classList.add('highlight');
+                        // Highlight the parent card
+                        let parentCard = el.closest('.data-card');
+                        while (parentCard && !parentCard.classList.contains('data-card')) {
+                            parentCard = parentCard.parentElement;
+                        }
+                        if (parentCard) {
+                            parentCard.classList.add('highlight');
+                        }
+                    } else {
+                        el.classList.remove('highlight');
+                    }
+                });
+            });
+
+            // Filter functionality
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const filter = this.getAttribute('data-filter');
+                    
+                    // Update active button
+                    filterButtons.forEach(btn => btn.classList.remove('bg-green-600', 'text-white'));
+                    if (filter !== 'all') {
+                        this.classList.add('bg-green-600', 'text-white');
+                    }
+                    
+                    // Filter cards
+                    const cards = document.querySelectorAll('.data-card');
+                    cards.forEach(card => {
+                        if (filter === 'all') {
+                            card.classList.remove('hidden');
+                        } else {
+                            if (card.getAttribute('data-category') === filter) {
+                                card.classList.remove('hidden');
+                            } else {
+                                card.classList.add('hidden');
+                            }
+                        }
+                    });
+                });
+            });
+
+            // Reset search and filter when clicking "All Data"
+            document.querySelector('[data-filter="all"]').addEventListener('click', function() {
+                searchInput.value = '';
+                const searchableElements = document.querySelectorAll('.searchable');
+                searchableElements.forEach(el => {
+                    el.classList.remove('highlight');
+                    el.parentElement.parentElement.classList.remove('highlight');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
